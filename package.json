@@ -9,13 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "tailwind-merge": "^3.4.0",
-    "react": "^19.2.0",
+    "react": "18.2.0",
     "react-dom": "^19.2.0",
-    "framer-motion": "^12.23.24",
-    "react-router-dom": "^7.9.6",
-    "lucide-react": "^0.555.0",
-    "clsx": "^2.1.1",
+    "react-router-dom": "6.22.0",
+    "framer-motion": "11.0.3",
+    "lucide-react": "0.330.0",
+    "clsx": "2.1.0",
+    "tailwind-merge": "2.2.1",
     "firebase": "^12.6.0"
   },
   "devDependencies": {

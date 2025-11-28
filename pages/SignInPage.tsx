@@ -1,24 +1,32 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Brain, ArrowRight, Lock, Mail } from 'lucide-react';
+import { Brain, ArrowRight, Lock, Mail, AlertCircle } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../lib/firebase';
 
 export const SignInPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSignIn = (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    setError('');
+    
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
       navigate('/');
-    }, 1500);
+    } catch (err: any) {
+      setError(err.message || 'Failed to sign in. Please check your credentials.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -79,6 +87,12 @@ export const SignInPage: React.FC = () => {
           </div>
 
           <form onSubmit={handleSignIn} className="space-y-4">
+             {error && (
+              <div className="p-3 rounded-md bg-red-500/10 border border-red-500/50 text-red-200 text-sm flex items-center gap-2">
+                <AlertCircle className="w-4 h-4" />
+                {error}
+              </div>
+            )}
             <div className="space-y-4">
               <div className="relative">
                  <Mail className="absolute left-3 top-3 w-4 h-4 text-slate-500" />
