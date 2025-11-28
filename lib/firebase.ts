@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
@@ -22,19 +22,11 @@ const firebaseConfig = {
   appId: env.VITE_FIREBASE_APP_ID
 };
 
-console.log("Initializing Firebase with project:", firebaseConfig.projectId ? firebaseConfig.projectId : "No project ID found in env");
+// Initialize Firebase only if it hasn't been initialized yet
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-let app;
-let auth;
-let db;
-
-try {
-  app = initializeApp(firebaseConfig);
-  auth = getAuth(app);
-  db = getFirestore(app);
-  console.log("Firebase initialized successfully");
-} catch (error) {
-  console.error("Firebase initialization error:", error);
-}
+console.log("Firebase initialized successfully");
 
 export { auth, db };
