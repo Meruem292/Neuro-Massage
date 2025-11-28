@@ -1,6 +1,6 @@
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
+import { getAuth, Auth } from "firebase/auth";
+import { getFirestore, Firestore } from "firebase/firestore";
 
 // Safe access to environment variables
 const getEnv = () => {
@@ -13,6 +13,7 @@ const getEnv = () => {
 
 const env = getEnv();
 
+// Default config that might be invalid if keys are restricted/deleted
 const firebaseConfig = {
   apiKey: "AIzaSyAEDvHfoKTJWBWy3a1izSUekv-pzjtUcOM",
   authDomain: "pillowease-32001.firebaseapp.com",
@@ -24,11 +25,24 @@ const firebaseConfig = {
   measurementId: "G-QVDC43EHX7"
 };
 
-// Initialize Firebase only if it hasn't been initialized yet
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
-const db = getFirestore(app);
+let app: FirebaseApp;
+let auth: Auth;
+let db: Firestore;
 
-console.log("Firebase initialized successfully");
+try {
+  // Initialize Firebase only if it hasn't been initialized yet
+  app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+  auth = getAuth(app);
+  db = getFirestore(app);
+  console.log("Firebase initialized successfully");
+} catch (error) {
+  console.error("Firebase initialization failed:", error);
+  // Fallback mock objects to prevent app crash
+  app = {} as FirebaseApp;
+  auth = {
+    currentUser: null,
+  } as unknown as Auth;
+  db = {} as Firestore;
+}
 
 export { auth, db };

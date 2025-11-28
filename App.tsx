@@ -6,7 +6,6 @@ import { LandingPage } from './pages/LandingPage';
 import { SignInPage } from './pages/SignInPage';
 import { SignUpPage } from './pages/SignUpPage';
 import { auth } from './lib/firebase';
-import { getAuth } from 'firebase/auth';
 
 // Create a Context for the Auth instance
 export const AuthContext = createContext(auth);
@@ -37,10 +36,6 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 const App: React.FC = () => {
-  // Ensure getAuth is referenced to satisfy the request and ensure module side-effects
-  const authInstance = getAuth(); 
-  console.log("Auth initialized:", !!authInstance);
-
   return (
     <AuthContext.Provider value={auth}>
       <Router>
