@@ -14,12 +14,14 @@ const getEnv = () => {
 const env = getEnv();
 
 const firebaseConfig = {
-  apiKey: env.VITE_FIREBASE_API_KEY,
-  authDomain: env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: env.VITE_FIREBASE_APP_ID
+  apiKey: "AIzaSyAEDvHfoKTJWBWy3a1izSUekv-pzjtUcOM",
+  authDomain: "pillowease-32001.firebaseapp.com",
+  databaseURL: "https://pillowease-32001-default-rtdb.firebaseio.com",
+  projectId: "pillowease-32001",
+  storageBucket: "pillowease-32001.firebasestorage.app",
+  messagingSenderId: "396099994176",
+  appId: "1:396099994176:web:5a77904991a93626a415a5",
+  measurementId: "G-QVDC43EHX7"
 };
 
 // Initialize Firebase only if it hasn't been initialized yet
