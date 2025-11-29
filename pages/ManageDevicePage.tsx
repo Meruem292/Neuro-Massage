@@ -14,17 +14,15 @@ import {
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
-import { auth, db } from '../lib/firebase';
+import { auth, database } from '../lib/firebase';
 import { 
-  collection, 
-  query, 
-  onSnapshot, 
-  addDoc, 
-  deleteDoc, 
-  doc, 
-  updateDoc, 
+  ref, 
+  onValue, 
+  push, 
+  remove, 
+  update, 
   serverTimestamp 
-} from 'firebase/firestore';
+} from 'firebase/database';
 
 interface Device {
   id: string;
@@ -50,15 +48,20 @@ export const ManageDevicePage: React.FC = () => {
         return;
       }
 
-      // Query devices subcollection for the current user
-      const q = query(collection(db, `users/${user.uid}/devices`));
+      // Query devices node for the current user: users/{userId}/devices
+      const devicesRef = ref(database, `users/${user.uid}/devices`);
       
-      const unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
-        const deviceData = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Device[];
-        setDevices(deviceData);
+      const unsubscribeSnapshot = onValue(devicesRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          const deviceList = Object.entries(data).map(([key, value]: [string, any]) => ({
+            id: key,
+            ...value
+          })) as Device[];
+          setDevices(deviceList);
+        } else {
+          setDevices([]);
+        }
         setLoading(false);
       }, (error) => {
         console.error("Error fetching devices:", error);
@@ -77,7 +80,8 @@ export const ManageDevicePage: React.FC = () => {
     setIsAdding(true);
 
     try {
-      await addDoc(collection(db, `users/${auth.currentUser.uid}/devices`), {
+      const devicesRef = ref(database, `users/${auth.currentUser.uid}/devices`);
+      await push(devicesRef, {
         deviceId: newDeviceId,
         status: 'online', // Mock status
         createdAt: serverTimestamp(),
@@ -94,7 +98,8 @@ export const ManageDevicePage: React.FC = () => {
   const handleDelete = async (id: string) => {
     if (!auth.currentUser) return;
     try {
-      await deleteDoc(doc(db, `users/${auth.currentUser.uid}/devices`, id));
+      const deviceRef = ref(database, `users/${auth.currentUser.uid}/devices/${id}`);
+      await remove(deviceRef);
     } catch (error) {
       console.error("Error deleting device:", error);
     }
@@ -108,7 +113,8 @@ export const ManageDevicePage: React.FC = () => {
   const handleUpdate = async (id: string) => {
     if (!auth.currentUser || !editValue.trim()) return;
     try {
-      await updateDoc(doc(db, `users/${auth.currentUser.uid}/devices`, id), {
+      const deviceRef = ref(database, `users/${auth.currentUser.uid}/devices/${id}`);
+      await update(deviceRef, {
         deviceId: editValue
       });
       setEditingId(null);
