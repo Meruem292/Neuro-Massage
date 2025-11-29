@@ -95,7 +95,8 @@ export const ManageDevicePage: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
     if (!auth.currentUser) return;
     try {
       const deviceRef = ref(database, `users/${auth.currentUser.uid}/devices/${id}`);
@@ -105,12 +106,14 @@ export const ManageDevicePage: React.FC = () => {
     }
   };
 
-  const startEdit = (device: Device) => {
+  const startEdit = (e: React.MouseEvent, device: Device) => {
+    e.stopPropagation();
     setEditingId(device.id);
     setEditValue(device.deviceId);
   };
 
-  const handleUpdate = async (id: string) => {
+  const handleUpdate = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
     if (!auth.currentUser || !editValue.trim()) return;
     try {
       const deviceRef = ref(database, `users/${auth.currentUser.uid}/devices/${id}`);
@@ -120,6 +123,17 @@ export const ManageDevicePage: React.FC = () => {
       setEditingId(null);
     } catch (error) {
       console.error("Error updating device:", error);
+    }
+  };
+
+  const cancelEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingId(null);
+  }
+
+  const handleCardClick = (deviceId: string) => {
+    if (!editingId) {
+      navigate(`/control/${deviceId}`);
     }
   };
 
@@ -203,7 +217,8 @@ export const ManageDevicePage: React.FC = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 whileHover={{ y: -4 }}
-                className="bg-slate-900/40 backdrop-blur-sm border border-white/5 rounded-2xl p-6 group hover:border-violet-500/30 transition-all relative overflow-hidden"
+                onClick={() => handleCardClick(device.id)}
+                className="bg-slate-900/40 backdrop-blur-sm border border-white/5 rounded-2xl p-6 group hover:border-violet-500/30 transition-all relative overflow-hidden cursor-pointer"
               >
                 {/* Background Animation */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]" />
@@ -224,17 +239,17 @@ export const ManageDevicePage: React.FC = () => {
 
                 <div className="space-y-4 relative z-10">
                   {editingId === device.id ? (
-                    <div className="flex gap-2">
+                    <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                       <Input
                         value={editValue}
                         onChange={(e) => setEditValue(e.target.value)}
                         className="h-9 text-sm"
                         autoFocus
                       />
-                      <Button size="sm" onClick={() => handleUpdate(device.id)} variant="primary" className="h-9 w-9 p-0">
+                      <Button size="sm" onClick={(e) => handleUpdate(e, device.id)} variant="primary" className="h-9 w-9 p-0">
                         <Save className="w-4 h-4" />
                       </Button>
-                      <Button size="sm" onClick={() => setEditingId(null)} variant="ghost" className="h-9 w-9 p-0">
+                      <Button size="sm" onClick={cancelEdit} variant="ghost" className="h-9 w-9 p-0">
                         <X className="w-4 h-4" />
                       </Button>
                     </div>
@@ -248,17 +263,17 @@ export const ManageDevicePage: React.FC = () => {
                   <div className="pt-4 border-t border-white/5 flex items-center justify-between">
                     <div className="flex items-center gap-2 text-xs text-slate-500">
                       <Zap className="w-3 h-3" />
-                      Sync: Just now
+                      Tap to Control
                     </div>
                     <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button 
-                        onClick={() => startEdit(device)}
+                        onClick={(e) => startEdit(e, device)}
                         className="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button 
-                        onClick={() => handleDelete(device.id)}
+                        onClick={(e) => handleDelete(e, device.id)}
                         className="p-2 hover:bg-red-500/10 rounded-lg text-slate-400 hover:text-red-400 transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />

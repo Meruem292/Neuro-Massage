@@ -6,6 +6,7 @@ import { LandingPage } from './pages/LandingPage';
 import { SignInPage } from './pages/SignInPage';
 import { SignUpPage } from './pages/SignUpPage';
 import { ManageDevicePage } from './pages/ManageDevicePage';
+import { ControlPage } from './pages/ControlPage';
 import { auth } from './lib/firebase';
 
 // Create a Context for the Auth instance
@@ -47,6 +48,7 @@ const App: React.FC = () => {
             <Route path="/signin" element={<SignInPage />} />
             <Route path="/signup" element={<SignUpPage />} />
             <Route path="/dashboard" element={<ManageDevicePage />} />
+            <Route path="/control/:id" element={<ControlPage />} />
           </Routes>
         </Layout>
       </Router>
