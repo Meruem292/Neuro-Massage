@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Brain, Menu, X } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Brain, Menu, X, LayoutDashboard, LogOut } from 'lucide-react';
 import { Button } from './ui/Button';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { auth } from '../lib/firebase';
+import { User } from 'firebase/auth';
 
 export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   const location = useLocation();
+  const navigate = useNavigate();
   const isAuthPage = location.pathname === '/signin' || location.pathname === '/signup';
 
   useEffect(() => {
@@ -16,8 +20,26 @@ export const Navbar: React.FC = () => {
       setIsScrolled(window.scrollY > 10);
     };
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    
+    // Listen to auth state changes
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      unsubscribe();
+    };
   }, []);
+
+  const handleSignOut = async () => {
+    try {
+      await auth.signOut();
+      navigate('/');
+    } catch (error) {
+      console.error('Error signing out', error);
+    }
+  };
 
   if (isAuthPage) return null;
 
@@ -42,15 +64,29 @@ export const Navbar: React.FC = () => {
           <div className="hidden md:flex items-center gap-8">
             <Link to="/" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">Features</Link>
             <Link to="/" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">Technology</Link>
-            <Link to="/" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">Reviews</Link>
             
             <div className="flex items-center gap-4 ml-4">
-              <Link to="/signin">
-                <Button variant="ghost" size="sm">Sign In</Button>
-              </Link>
-              <Link to="/signup">
-                <Button size="sm">Get Started</Button>
-              </Link>
+              {user ? (
+                <>
+                  <Link to="/dashboard">
+                    <Button variant="ghost" size="sm" className="gap-2">
+                      <LayoutDashboard className="w-4 h-4" /> Dashboard
+                    </Button>
+                  </Link>
+                  <Button variant="secondary" size="sm" onClick={handleSignOut} className="gap-2">
+                    <LogOut className="w-4 h-4" /> Sign Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link to="/signin">
+                    <Button variant="ghost" size="sm">Sign In</Button>
+                  </Link>
+                  <Link to="/signup">
+                    <Button size="sm">Get Started</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
 
@@ -76,12 +112,26 @@ export const Navbar: React.FC = () => {
             <div className="px-4 py-8 space-y-4 flex flex-col items-center">
               <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="text-slate-300 hover:text-white">Features</Link>
               <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="text-slate-300 hover:text-white">Technology</Link>
-              <Link to="/signin" onClick={() => setIsMobileMenuOpen(false)} className="w-full">
-                <Button variant="ghost" className="w-full">Sign In</Button>
-              </Link>
-              <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)} className="w-full">
-                <Button className="w-full">Get Started</Button>
-              </Link>
+              
+              {user ? (
+                <>
+                   <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="w-full">
+                    <Button variant="ghost" className="w-full gap-2"><LayoutDashboard className="w-4 h-4"/> Dashboard</Button>
+                  </Link>
+                  <Button onClick={() => { handleSignOut(); setIsMobileMenuOpen(false); }} className="w-full gap-2">
+                    <LogOut className="w-4 h-4"/> Sign Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link to="/signin" onClick={() => setIsMobileMenuOpen(false)} className="w-full">
+                    <Button variant="ghost" className="w-full">Sign In</Button>
+                  </Link>
+                  <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)} className="w-full">
+                    <Button className="w-full">Get Started</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </motion.div>
         )}
