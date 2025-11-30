@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Brain, Waves, Battery, Zap, ShieldCheck } from 'lucide-react';
+import { Brain, Waves, Battery, Zap, ShieldCheck, Wifi, Moon } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Link } from 'react-router-dom';
 
@@ -147,9 +147,9 @@ export const LandingPage: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              { title: "Neuro-Haptics", desc: "Micro-vibrations stimulating the vagus nerve.", icon: Brain, color: "text-purple-400" },
-              { title: "Smart Thermoregulation", desc: "Adapts temperature for optimal deep sleep cycles.", icon: Zap, color: "text-amber-400" },
-              { title: "Ergonomic Memory", desc: "Aerospace-grade foam that remembers your posture.", icon: ShieldCheck, color: "text-emerald-400" }
+              { title: "Web-Controlled Haptics", desc: "Seamless control directly from your web browser.", icon: Wifi, color: "text-purple-400" },
+              { title: "Triple-Level Intensity", desc: "Three adjustable vibration levels for personalized comfort.", icon: Zap, color: "text-amber-400" },
+              { title: "Deep Sleep Induction", desc: "Rhythmic patterns designed to induce restorative sleep.", icon: Moon, color: "text-emerald-400" }
             ].map((feature, idx) => (
               <motion.div
                 key={idx}
