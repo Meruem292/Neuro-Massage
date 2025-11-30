@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Brain, Waves, Battery, Zap, Star, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Brain, Waves, Battery, Zap, ShieldCheck } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Link } from 'react-router-dom';
 
@@ -49,43 +49,32 @@ export const LandingPage: React.FC = () => {
               </motion.div>
               
               <motion.h1 variants={fadeIn} className="text-5xl lg:text-7xl font-bold font-display leading-tight tracking-tight">
-                Unlock <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-indigo-400 to-cyan-400">Deep Sleep</span> with Neuro Tech
+                Smart massage with{' '}
+                <span className="relative inline-block whitespace-nowrap">
+                  <span className="absolute inset-0 bg-gradient-to-r from-purple-600 via-fuchsia-500 to-purple-600 blur-3xl opacity-30 animate-pulse"></span>
+                  <motion.span 
+                    className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-fuchsia-200 to-purple-300 bg-[200%_auto] inline-block"
+                    animate={{ 
+                      backgroundPosition: ["0%", "200%"],
+                      scale: [1, 1.05, 1],
+                      y: [0, -12, 0]
+                    }}
+                    transition={{ 
+                      backgroundPosition: { duration: 3, repeat: Infinity, ease: "linear" },
+                      scale: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+                      y: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+                    }}
+                  >
+                    Neuro Massage
+                  </motion.span>
+                </span>.
               </motion.h1>
               
               <motion.p variants={fadeIn} className="text-xl text-slate-400 max-w-lg leading-relaxed">
-                Experience the world's first smart pillow that uses gentle neuro-haptic vibrations to guide your brain into deep restorative sleep in minutes.
+                Experience the world’s first smart pillow that gently squeezes away tension, melts your muscle stress, and wraps you in pure relaxation.
               </motion.p>
               
               <motion.div variants={fadeIn} className="flex flex-col sm:flex-row gap-4">
-                <Link to="/signup">
-                  <Button size="lg" className="w-full sm:w-auto shadow-lg shadow-violet-900/20">
-                    Get Early Access <ArrowRight className="ml-2 w-4 h-4" />
-                  </Button>
-                </Link>
-                <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                  Watch Demo
-                </Button>
-              </motion.div>
-
-              <motion.div variants={fadeIn} className="pt-8 flex items-center gap-8">
-                <div className="flex -space-x-3">
-                  {[1,2,3,4].map((i) => (
-                    <img key={i} src={`https://picsum.photos/100/100?random=${i}`} className="w-10 h-10 rounded-full border-2 border-slate-950" alt="User" />
-                  ))}
-                  <div className="w-10 h-10 rounded-full bg-slate-800 border-2 border-slate-950 flex items-center justify-center text-xs font-bold text-white">
-                    +2k
-                  </div>
-                </div>
-                <div className="text-sm">
-                  <div className="flex text-yellow-400 mb-1">
-                    <Star size={14} fill="currentColor" />
-                    <Star size={14} fill="currentColor" />
-                    <Star size={14} fill="currentColor" />
-                    <Star size={14} fill="currentColor" />
-                    <Star size={14} fill="currentColor" />
-                  </div>
-                  <span className="text-slate-400">Trusted by 10,000+ sleepers</span>
-                </div>
               </motion.div>
             </motion.div>
 
