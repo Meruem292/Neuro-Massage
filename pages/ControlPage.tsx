@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Power, Zap, Waves, Activity, Thermometer } from 'lucide-react';
+import { ArrowLeft, Power, Zap, Waves, Activity, Thermometer, Minimize2 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { auth, database } from '../lib/firebase';
 import { ref, onValue, update } from 'firebase/database';
@@ -9,7 +9,8 @@ import { ref, onValue, update } from 'firebase/database';
 interface DeviceState {
   power: boolean;
   mode: 1 | 2;
-  intensity: 1 | 2 | 3;
+  squeezeIntensity: 1 | 2 | 3;
+  vibrationIntensity: 1 | 2 | 3;
 }
 
 interface DeviceData {
@@ -24,8 +25,13 @@ export const ControlPage: React.FC = () => {
   const [device, setDevice] = useState<DeviceData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Default state if not present in DB
-  const currentState: DeviceState = device?.state || { power: false, mode: 1, intensity: 1 };
+  // Default state with separate intensities
+  const currentState: DeviceState = {
+    power: device?.state?.power ?? false,
+    mode: device?.state?.mode ?? 1,
+    squeezeIntensity: device?.state?.squeezeIntensity ?? 1,
+    vibrationIntensity: device?.state?.vibrationIntensity ?? 1,
+  };
 
   useEffect(() => {
     const unsubscribeAuth = auth.onAuthStateChanged((user) => {
@@ -82,9 +88,14 @@ export const ControlPage: React.FC = () => {
     updateState({ mode });
   };
 
-  const setIntensity = (intensity: 1 | 2 | 3) => {
+  const setSqueezeIntensity = (squeezeIntensity: 1 | 2 | 3) => {
     if (!currentState.power) return;
-    updateState({ intensity });
+    updateState({ squeezeIntensity });
+  };
+
+  const setVibrationIntensity = (vibrationIntensity: 1 | 2 | 3) => {
+    if (!currentState.power) return;
+    updateState({ vibrationIntensity });
   };
 
   if (loading) {
@@ -195,35 +206,66 @@ export const ControlPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Intensity Slider */}
+            {/* Squeeze Intensity Slider */}
             <div>
-               <div className="flex items-center justify-between mb-4 px-2">
+               <div className="flex items-center justify-between mb-3 px-2">
                 <span className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-amber-400" /> Intensity
+                  <Minimize2 className="w-4 h-4 text-emerald-400" /> Squeeze Intensity
                 </span>
                 <span className="text-xs font-bold text-slate-400 bg-slate-800 px-2 py-1 rounded">
-                  Level {currentState.intensity}
+                  Level {currentState.squeezeIntensity}
                 </span>
               </div>
               
-              <div className="flex justify-between items-center gap-4 bg-slate-950/50 p-4 rounded-xl border border-white/5">
+              <div className="flex justify-between items-center gap-3 bg-slate-950/50 p-3 rounded-xl border border-white/5">
                 {[1, 2, 3].map((level) => (
                   <button
                     key={level}
-                    onClick={() => setIntensity(level as 1 | 2 | 3)}
-                    className={`flex-1 h-12 rounded-lg flex flex-col items-center justify-center gap-1 transition-all ${
-                      currentState.intensity >= level 
+                    onClick={() => setSqueezeIntensity(level as 1 | 2 | 3)}
+                    className={`flex-1 h-10 rounded-lg flex flex-col items-center justify-center gap-1 transition-all ${
+                      currentState.squeezeIntensity >= level 
+                        ? 'bg-emerald-600/20 border border-emerald-500/50' 
+                        : 'bg-slate-800/20 border border-white/5'
+                    }`}
+                  >
+                    <div className={`w-full max-w-[40%] h-1 rounded-full ${
+                      currentState.squeezeIntensity >= level ? 'bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.5)]' : 'bg-slate-700'
+                    }`} />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Vibration Intensity Slider */}
+            <div>
+               <div className="flex items-center justify-between mb-3 px-2">
+                <span className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-amber-400" /> Vibration Intensity
+                </span>
+                <span className="text-xs font-bold text-slate-400 bg-slate-800 px-2 py-1 rounded">
+                  Level {currentState.vibrationIntensity}
+                </span>
+              </div>
+              
+              <div className="flex justify-between items-center gap-3 bg-slate-950/50 p-3 rounded-xl border border-white/5">
+                {[1, 2, 3].map((level) => (
+                  <button
+                    key={level}
+                    onClick={() => setVibrationIntensity(level as 1 | 2 | 3)}
+                    className={`flex-1 h-10 rounded-lg flex flex-col items-center justify-center gap-1 transition-all ${
+                      currentState.vibrationIntensity >= level 
                         ? 'bg-violet-600/20 border border-violet-500/50' 
                         : 'bg-slate-800/20 border border-white/5'
                     }`}
                   >
                     <div className={`w-full max-w-[40%] h-1 rounded-full ${
-                      currentState.intensity >= level ? 'bg-violet-400 shadow-[0_0_10px_rgba(167,139,250,0.5)]' : 'bg-slate-700'
+                      currentState.vibrationIntensity >= level ? 'bg-violet-400 shadow-[0_0_10px_rgba(167,139,250,0.5)]' : 'bg-slate-700'
                     }`} />
                   </button>
                 ))}
               </div>
-              <div className="flex justify-between px-4 mt-2 text-[10px] text-slate-500 uppercase tracking-wider font-semibold">
+              
+              <div className="flex justify-between px-3 mt-1 text-[10px] text-slate-500 uppercase tracking-wider font-semibold">
                 <span>Soft</span>
                 <span>Medium</span>
                 <span>Deep</span>

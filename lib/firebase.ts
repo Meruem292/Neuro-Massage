@@ -1,4 +1,4 @@
-import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
+import * as firebaseApp from "firebase/app";
 import { getAuth, Auth } from "firebase/auth";
 import { getDatabase, Database } from "firebase/database";
 
@@ -23,7 +23,7 @@ const firebaseConfig = {
   appId: env.VITE_FIREBASE_APP_ID || "1:396099994176:web:5a77904991a93626a415a5"
 };
 
-let app: FirebaseApp;
+let app: any;
 let auth: Auth;
 let database: Database;
 
@@ -35,7 +35,7 @@ try {
   }
 
   // Initialize Firebase only if it hasn't been initialized yet
-  app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+  app = !firebaseApp.getApps().length ? firebaseApp.initializeApp(firebaseConfig) : firebaseApp.getApp();
   auth = getAuth(app);
   database = getDatabase(app);
   console.log("Firebase initialized successfully");
@@ -43,7 +43,7 @@ try {
   console.log("Running in offline/demo mode (Firebase not connected).");
   
   // Fallback mock objects to prevent app crash so you can see the UI
-  app = {} as FirebaseApp;
+  app = {} as any;
   
   // Mock Auth
   auth = {
